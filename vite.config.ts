@@ -22,29 +22,73 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
+        manualChunks: (id) => {
           // Vendor chunks
-          'react-vendor': ['react', 'react-dom'],
-          'router-vendor': ['react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-accordion', '@radix-ui/react-alert-dialog', '@radix-ui/react-avatar', '@radix-ui/react-checkbox', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-label', '@radix-ui/react-navigation-menu', '@radix-ui/react-popover', '@radix-ui/react-progress', '@radix-ui/react-radio-group', '@radix-ui/react-scroll-area', '@radix-ui/react-select', '@radix-ui/react-separator', '@radix-ui/react-sheet', '@radix-ui/react-slider', '@radix-ui/react-switch', '@radix-ui/react-tabs', '@radix-ui/react-toast', '@radix-ui/react-tooltip'],
-          'utils-vendor': ['clsx', 'tailwind-merge', 'class-variance-authority'],
-          'form-vendor': ['react-hook-form', '@hookform/resolvers'],
-          'animation-vendor': ['framer-motion'],
-          'icons-vendor': ['lucide-react'],
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('react-router')) {
+              return 'router-vendor';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('clsx') || id.includes('tailwind-merge') || id.includes('class-variance-authority')) {
+              return 'utils-vendor';
+            }
+            if (id.includes('react-hook-form') || id.includes('@hookform')) {
+              return 'form-vendor';
+            }
+            if (id.includes('framer-motion')) {
+              return 'animation-vendor';
+            }
+            if (id.includes('lucide-react')) {
+              return 'icons-vendor';
+            }
+            if (id.includes('@tanstack')) {
+              return 'query-vendor';
+            }
+            // Other vendor libraries
+            return 'vendor';
+          }
           
-          // Page chunks - group related pages
-          'home-pages': ['./src/pages/Index.tsx', './src/pages/About.tsx', './src/pages/Features.tsx'],
-          'auth-pages': ['./src/pages/Login.tsx', './src/pages/Signup.tsx', './src/pages/ForgotPassword.tsx'],
-          'docs-pages': ['./src/pages/BrowseDocumentation.tsx', './src/pages/docs/ApiDocumentation.tsx', './src/pages/docs/GettingStartedGuide.tsx', './src/pages/docs/SecurityBestPractices.tsx', './src/pages/docs/TroubleshootingGuide.tsx'],
-          'support-pages': ['./src/pages/Help.tsx', './src/pages/Contact.tsx', './src/pages/ContactSupport.tsx', './src/pages/Community.tsx'],
-          'business-pages': ['./src/pages/Pricing.tsx', './src/pages/StartFreeTrial.tsx', './src/pages/Checkout.tsx', './src/pages/ThankYou.tsx'],
-          'legal-pages': ['./src/pages/Privacy.tsx', './src/pages/Terms.tsx', './src/pages/Cookies.tsx', './src/pages/GDPR.tsx', './src/pages/Cancellation.tsx', './src/pages/Refund.tsx'],
-          'blog-pages': ['./src/pages/Blog.tsx', './src/pages/BlogArticle.tsx'],
+          // Page chunks
+          if (id.includes('/pages/')) {
+            if (id.includes('/pages/Index.tsx') || id.includes('/pages/About.tsx') || id.includes('/pages/Features.tsx')) {
+              return 'home-pages';
+            }
+            if (id.includes('/pages/Login.tsx') || id.includes('/pages/Signup.tsx') || id.includes('/pages/ForgotPassword.tsx')) {
+              return 'auth-pages';
+            }
+            if (id.includes('/pages/docs/')) {
+              return 'docs-pages';
+            }
+            if (id.includes('/pages/Help.tsx') || id.includes('/pages/Contact') || id.includes('/pages/Community.tsx')) {
+              return 'support-pages';
+            }
+            if (id.includes('/pages/Pricing.tsx') || id.includes('/pages/Checkout.tsx') || id.includes('/pages/ThankYou.tsx') || id.includes('/pages/StartFreeTrial.tsx')) {
+              return 'business-pages';
+            }
+            if (id.includes('/pages/Privacy.tsx') || id.includes('/pages/Terms.tsx') || id.includes('/pages/Cookies.tsx') || id.includes('/pages/GDPR.tsx') || id.includes('/pages/Cancellation.tsx') || id.includes('/pages/Refund.tsx')) {
+              return 'legal-pages';
+            }
+            if (id.includes('/pages/Blog')) {
+              return 'blog-pages';
+            }
+            return 'other-pages';
+          }
           
           // Component chunks
-          'ui-components': ['./src/components/ui/button.tsx', './src/components/ui/input.tsx', './src/components/ui/card.tsx', './src/components/ui/dialog.tsx', './src/components/ui/form.tsx'],
-          'layout-components': ['./src/components/Navigation.tsx', './src/components/Footer.tsx', './src/components/SEO.tsx'],
-          'feature-components': ['./src/components/CookieConsent.tsx', './src/components/Captcha.tsx', './src/components/LogoGenerator.tsx']
+          if (id.includes('/components/ui/')) {
+            return 'ui-components';
+          }
+          if (id.includes('/components/Navigation.tsx') || id.includes('/components/Footer.tsx') || id.includes('/components/SEO.tsx')) {
+            return 'layout-components';
+          }
+          if (id.includes('/components/CookieConsent.tsx') || id.includes('/components/Captcha.tsx') || id.includes('/components/LogoGenerator.tsx')) {
+            return 'feature-components';
+          }
         }
       }
     },
